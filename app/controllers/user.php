@@ -8,63 +8,119 @@
 
 namespace App\controllers;
 
+use \App\helpers\session;
+use \App\models\user as users;
 
 class user
 {
-    public function login($service)
+    public function login()
     {
-        $service->render('app/views/login.phtml');
+        $session = new Session;
+        $session->createSession();
 
-    }
-    public function signup()
-    {
-        if(isset($_POST)){
-            $message=$_POST['first_name'];
+        if($session->isLogged()){
+            header('Location: /index');
+            exit();
         }
-        if (isset($_POST['submit'])) {
+        $error=array();
 
-            //collect form data
-            extract($_POST);
-
+            $username = filter_var($_POST['username'], FILTER_SANITIZE_STRING);
+            $password = $_POST['password'];
 
             if ($username == '') {
-                $message[] = 'Please enter the username.';
+                $error[] = 'Username is required';
+            }
+
+            if(!$error) {
+                $user = users::getUser($username);
+                if ($user) {
+                    if (password_verify($password, $user['password'])) {
+                        $session->logUser($user['username']);
+                        header('Location: /index');
+                        exit();
+
+                    } else {
+                        $error[] = 'incorrect password';
+                    }
+                } else {
+                    $error[] = 'Username does not exist';
+                }
+            }
+
+
+        return $error;
+
+
+    }
+    public function signup($response)
+    {
+
+       // if (isset($_POST['submit'])) {
+
+            //collect form data
+            $userName=$_POST['userName'];
+            $firstName=$_POST['firstName'];
+            $lastName=$_POST['lastName'];
+            $email=$_POST['email'];
+            $password=$_POST['password'];
+            $confirmPassword=$_POST['confirmPassword'];
+
+
+            $error=array();
+            if (users::getUser($userName)){
+                $error[]="The username already exists";
+            }
+            if ($userName == '') {
+                $error[] = 'Please enter the username.';
             }
 
 
             if ($password == '') {
-                $message[] = 'Please enter the password.';
+                $error[] = 'Please enter the password.';
             }
 
 
-            if ($passwordConfirm == '') {
-                $message[] = 'Please confirm the password.';
+            if ($confirmPassword == '') {
+                $error[] = 'Please confirm the password.';
             }
 
-            if ($password != $passwordConfirm) {
-                $message[] = 'Passwords do not match.';
+            if ($password != $confirmPassword) {
+                $error[] = 'Passwords do not match.';
             }
-            if (!$message)
+            if (!$error)
             {
                 $hashedPassword= password_hash($password,PASSWORD_BCRYPT);
                 $data = array(
-                    'username' => $username,
-                    'hashPass' => $hashedPassword
+                    'username' => $userName,
+                    'firstname' => $firstName,
+                    'lastname' => $lastName,
+                    'email' => $email,
+                    'hashPass' => $hashedPassword,
+                    'image'=>'none'
 
                 );
-                $status = $this->model->updateAdmin($data);
+                $status=users::signUp($data);
                 if (isset($status) && !empty($status)) {
                     $error[] = $status;
                 }
-                if (!$error) {
-                    header('location: /admin/index');
+
+                if (!$error){
+                   $response->redirect('/login');
                 }
             }
 
 
 
 
-        }
-        return $message;
+        //}
+        return $error;
+    }
+
+    public function logout()
+    {
+        $session = new Session;
+        $session->logOut();
+        header('location: /login');
+        exit();
     }
 }

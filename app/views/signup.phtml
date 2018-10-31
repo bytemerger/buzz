@@ -1,10 +1,18 @@
 <?php include 'app/views/includes/header.phtml'?>
 <body id="signupForm">
-<?php echo $this->message;?>
 <div class="signup-form">
     <form action="/create" method="post">
         <h2>Register</h2>
         <p class="hint-text">Create your account. It's free and only takes a minute.</p>
+        <?php
+
+        //check for any errors
+        if(isset($this->error)){
+            foreach($this->error as $error1){
+                echo '<p class="error">'.$error1.'</p>';
+            }
+        }
+        ?>
         <div class="form-group">
                 <input type="text" class="form-control" name="firstName" placeholder="First Name" required="required">
         </div>

@@ -8,14 +8,16 @@
 
 namespace App\config;
 
+
 class Db
 {
     //hold the db connection
-    public static $db;
+    public  $db;
 
     public function __construct()
     {
-        self::$db= new \PDO(DB_DSN,DB_USERNAME,DB_PASSWORD);
-        self::$db->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        $this->db= new \PDO(DB_DSN,DB_USERNAME,DB_PASSWORD);
+        $this->db->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+
     }
 }

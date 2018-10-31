@@ -139,3 +139,13 @@ body#signupForm{ background-image:url("/app/public/img/login.jpg"); background-r
 .signup-form .btn.btn-primary {
     background: #ff9900 none repeat scroll 0 0;
 }
+.error {
+    padding: 0.75em;
+    margin: 0.75em;
+    border: 1px solid #990000;
+    max-width: 400px;
+    color: #990000;
+    background-color: #FDF0EB;
+    -moz-border-radius: 0.5em;
+    -webkit-border-radius: 0.5em;
+}

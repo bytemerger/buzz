@@ -21,7 +21,7 @@ class settings
         define( "DB_PASSWORD", "come1234" );
         //set a default language
         define('LANGUAGE_CODE', 'en');
-        define('IMAGE_PATH', '/app/img');
+        define('IMAGE_PATH', '/app/public/img');
     }
 
 }
