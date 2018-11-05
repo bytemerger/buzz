@@ -31,7 +31,6 @@ class login
         $conn=new Db();
         $stmt = $conn->db->prepare('SELECT * FROM logins WHERE loginSelector = :selector');
         $stmt->bindValue(':selector', $selector);
-
         $stmt->execute();
         $results = $stmt->fetch();
         $conn=null;

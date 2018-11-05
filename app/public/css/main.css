@@ -149,3 +149,6 @@ body#signupForm{ background-image:url("/app/public/img/login.jpg"); background-r
     -moz-border-radius: 0.5em;
     -webkit-border-radius: 0.5em;
 }
+.clear{
+    margin-bottom: 3em;
+}

@@ -22,6 +22,7 @@ class user
             header('Location: /index');
             exit();
         }
+
         $error=array();
 
             $username = filter_var($_POST['username'], FILTER_SANITIZE_STRING);
@@ -119,6 +120,7 @@ class user
     public function logout()
     {
         $session = new Session;
+        $session->createSession();
         $session->logOut();
         header('location: /login');
         exit();

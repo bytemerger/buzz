@@ -78,7 +78,8 @@ class session
         );
         login::deleteLogin($data);
         unset($_SESSION['userName']);
-        setcookie('authToken', '', 1);
+        session_destroy();
+        setcookie('authToken', '', time() - 3600);
         unset($_COOKIE['authToken']);
     }
 

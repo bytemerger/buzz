@@ -8,8 +8,10 @@ $baseDir = dirname($vendorDir);
 return array(
     'App\\config\\Db' => $baseDir . '/app/config/Db.php',
     'App\\config\\settings' => $baseDir . '/app/config/settings.php',
+    'App\\controllers\\friends' => $baseDir . '/app/controllers/friends.php',
     'App\\controllers\\user' => $baseDir . '/app/controllers/user.php',
     'App\\helpers\\session' => $baseDir . '/app/helpers/session.php',
+    'App\\models\\friends' => $baseDir . '/app/models/friends.php',
     'App\\models\\login' => $baseDir . '/app/models/login.php',
     'App\\models\\user' => $baseDir . '/app/models/user.php',
     'Faker\\Calculator\\Iban' => $vendorDir . '/fzaninotto/faker/src/Faker/Calculator/Iban.php',

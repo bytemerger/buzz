@@ -39,8 +39,10 @@ class ComposerStaticInit9cc6824db1d5e54777490fd73f90526a
     public static $classMap = array (
         'App\\config\\Db' => __DIR__ . '/../..' . '/app/config/Db.php',
         'App\\config\\settings' => __DIR__ . '/../..' . '/app/config/settings.php',
+        'App\\controllers\\friends' => __DIR__ . '/../..' . '/app/controllers/friends.php',
         'App\\controllers\\user' => __DIR__ . '/../..' . '/app/controllers/user.php',
         'App\\helpers\\session' => __DIR__ . '/../..' . '/app/helpers/session.php',
+        'App\\models\\friends' => __DIR__ . '/../..' . '/app/models/friends.php',
         'App\\models\\login' => __DIR__ . '/../..' . '/app/models/login.php',
         'App\\models\\user' => __DIR__ . '/../..' . '/app/models/user.php',
         'Faker\\Calculator\\Iban' => __DIR__ . '/..' . '/fzaninotto/faker/src/Faker/Calculator/Iban.php',
