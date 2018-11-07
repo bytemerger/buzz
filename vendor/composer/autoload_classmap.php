@@ -9,6 +9,7 @@ return array(
     'App\\config\\Db' => $baseDir . '/app/config/Db.php',
     'App\\config\\settings' => $baseDir . '/app/config/settings.php',
     'App\\controllers\\friends' => $baseDir . '/app/controllers/friends.php',
+    'App\\controllers\\home' => $baseDir . '/app/controllers/home.php',
     'App\\controllers\\user' => $baseDir . '/app/controllers/user.php',
     'App\\helpers\\session' => $baseDir . '/app/helpers/session.php',
     'App\\models\\friends' => $baseDir . '/app/models/friends.php',

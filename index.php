@@ -7,6 +7,7 @@ ini_set('display_errors', true);
 
 use App\config\settings;
 use App\controllers\user;
+use App\controllers\home;
 use App\controllers\friends;
 
 
@@ -48,16 +49,20 @@ $klein->respond('GET', '/logout',function ($request, $response){
     $user->logout();
 });
 
-$klein->respond('GET', '/index', function ($request, $response,$service){$service->render('app/views/index.phtml');});
+$klein->respond('GET', '/index', function ($request, $response,$service){
+    $home= new home();
+    $home->index($service);
+    //$service->render('app/views/index.phtml');
+});
+$klein->respond('POST', '/index', function ($request, $response,$service){
+    $home=new home();
+    $home->action();
+});
 
 $klein->respond('GET', '/addfriend', function ($request, $response,$service){$service->render('app/views/addfriend.phtml');});
 $klein->respond('POST', '/addfriend', function ($request, $response,$service){
     $friend=new friends();
-    $friend->search();
+    $friend->action();
 });
-//add friend to friends table
-$klein->respond('POST', '/add', function ($request, $response,$service){
-    $friend=new friends();
-    $friend->add();
-});
+
 $klein->dispatch();

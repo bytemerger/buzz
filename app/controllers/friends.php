@@ -23,6 +23,16 @@ class friends
         }
     }
 
+    public function action(){
+        switch ($_POST['action'])
+        {
+            case 'search': $this->search();
+                            break;
+            case 'add': $this->add();
+                        break;
+        }
+    }
+
     public function search(){
 
         $search=array(
@@ -39,12 +49,18 @@ class friends
     }
     public function add(){
         //request is being sent to
-        $accept=$_POST['text'];
+        $accept=$_POST['user'];
 
         $add= array(
             'sendFriend'=> $_SESSION['userName'],
             'acceptFriend'=>$accept,
         );
+        //check whether friends exist
+        $check=friend::check($add);
+        if($check){
+            echo 'already friends with '.$accept;
+            exit();
+        }
         $result = friend::add($add);
         if ($result != ''){
             echo 'unable to add friend';

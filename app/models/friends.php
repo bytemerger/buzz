@@ -28,11 +28,12 @@ class friends
     {
         $conn=new Db();
         try {
-        $sql = "INSERT INTO friends ( sentFriend, acceptFriend, accepted) VALUES ( :friend, :friend2, :acc)";
+        $sql = "INSERT INTO friends ( sendFriend, acceptFriend, accepted,seen) VALUES ( :friend, :friend2, :acc,:seen)";
         $st= $conn->db->prepare($sql);
-        $st->bindValue(":friend", $add['sentFriend']);
+        $st->bindValue(":friend", $add['sendFriend']);
         $st->bindValue(":friend2", $add['acceptFriend']);
         $st->bindValue(":acc", 0);
+        $st->bindValue(":seen", 0);
         $st->execute();
         $conn=null;
         $status='';
@@ -42,5 +43,98 @@ class friends
         }
         return $status;
 
+    }
+
+    public static function check($search)
+    {
+        $conn=new Db();
+        $sql="SELECT * FROM friends WHERE (sendFriend=:send AND acceptFriend=:accept) OR (acceptFriend=:send AND sendFriend=:accept)";
+        $st= $conn->db->prepare($sql);
+        $st->bindValue(":send", $search['sendFriend']);
+        $st->bindValue(":accept", $search['acceptFriend']);
+        $st->execute();
+        $conn=null;
+        $result= $st->fetchAll(\PDO::FETCH_ASSOC);
+        return $result;
+    }
+
+    public static function friendRequest($user)
+    {
+        $conn=new Db();
+        $sql="SELECT * FROM friends WHERE acceptFriend=:user AND accepted=0";
+        $st= $conn->db->prepare($sql);
+        $st->bindValue(":user", $user);
+        $st->execute();
+        $conn=null;
+        $result= $st->fetchAll(\PDO::FETCH_ASSOC);
+        return $result;
+    }
+
+    public static function sentRequest($user)
+    {
+        $conn=new Db();
+        $sql="SELECT * FROM friends WHERE sendFriend=:user AND accepted=0";
+        $st= $conn->db->prepare($sql);
+        $st->bindValue(":user", $user);
+        $st->execute();
+        $conn=null;
+        $result= $st->fetchAll(\PDO::FETCH_ASSOC);
+        return $result;
+    }
+    //cancel sent request
+    public static function cancelRequest($data)
+    {
+        $conn=new Db();
+        $sql="DELETE FROM friends WHERE sendFriend=:user AND acceptFriend=:friend AND accepted=0";
+        $st= $conn->db->prepare($sql);
+        $st->bindValue(":user", $data['user']);
+        $st->bindValue(":friend", $data['friend']);
+        $st->execute();
+        $conn=null;
+    }
+
+    public static function deleteRequest($data)
+    {
+        $conn=new Db();
+        $sql="DELETE FROM friends WHERE acceptFriend=:user AND sendFriend=:friend AND accepted=0";
+        $st= $conn->db->prepare($sql);
+        $st->bindValue(":user", $data['user']);
+        $st->bindValue(":friend", $data['friend']);
+        $st->execute();
+        $conn=null;
+    }
+
+    public static function acceptRequest($data)
+    {
+        $conn=new Db();
+        $sql="UPDATE friends SET accepted=1 WHERE acceptFriend=:user AND sendFriend=:friend AND accepted=0";
+        $st= $conn->db->prepare($sql);
+        $st->bindValue(":user", $data['user']);
+        $st->bindValue(":friend", $data['friend']);
+        $st->execute();
+        $conn=null;
+    }
+
+    public static function getFriends($search)
+    {
+        $conn=new Db();
+        $sql= "SELECT * FROM users WHERE username IN (SELECT acceptFriend AS friend FROM friends WHERE sendFriend=:user AND accepted=1 UNION DISTINCT SELECT sendFriend FROM friends WHERE acceptFriend=:user AND accepted=1)";
+        $st= $conn->db->prepare($sql);
+        $st->bindValue(":user", $search);
+        $st->execute();
+        $conn=null;
+        $result= $st->fetchAll(\PDO::FETCH_ASSOC);
+        return $result;
+    }
+
+    public static function deleteFriend($data)
+    {
+        $conn=new Db();
+        $sql="DELETE FROM friends WHERE (acceptFriend=:user AND sendFriend=:friend) OR (sendFriend=:user AND acceptFriend=:friend) AND accepted=1";
+        $st= $conn->db->prepare($sql);
+        $st->bindValue(":user", $data['user']);
+        $st->bindValue(":friend", $data['friend']);
+        $st->execute();
+        $conn=null;
     }
 }
