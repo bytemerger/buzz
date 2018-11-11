@@ -137,4 +137,39 @@ class friends
         $st->execute();
         $conn=null;
     }
+
+
+    public static function searchFriends($search)
+    {
+        $conn=new Db();
+        $sql= "SELECT * FROM users WHERE username  IN (SELECT acceptFriend AS friend FROM friends WHERE sendFriend=:user UNION DISTINCT SELECT sendFriend FROM friends WHERE acceptFriend=:user) AND (username LIKE :name OR firstName LIKE :name OR lastName LIKE :name) AND (username <> :user)";
+        $st= $conn->db->prepare($sql);
+        $st->bindValue(":name", '%'.$search['search'].'%');
+        $st->bindValue(":user", $search['user']);
+        $st->execute();
+        $conn=null;
+        $result= $st->fetchAll(\PDO::FETCH_ASSOC);
+        return $result;
+    }
+    public static function friendRequestCount($user)
+    {
+        $conn=new Db();
+        $sql="SELECT * FROM friends WHERE acceptFriend=:user AND accepted=0 AND seen=0";
+        $st= $conn->db->prepare($sql);
+        $st->bindValue(":user", $user);
+        $st->execute();
+        $conn=null;
+        $result= $st->rowCount();
+        return $result;
+    }
+    public static function removeUnseen($user)
+    {
+        $conn=new Db();
+        $sql="UPDATE friends SET seen=1 WHERE acceptFriend=:user AND accepted=0";
+        $st= $conn->db->prepare($sql);
+        $st->bindValue(":user", $user);
+        $st->execute();
+        $conn=null;
+
+    }
 }

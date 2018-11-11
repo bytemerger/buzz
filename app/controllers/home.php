@@ -23,11 +23,11 @@ class home
         }
     }
 
-    public function index($service)
+    public function index()
     {
         $user=$_SESSION['userName'];
         $result=friends::getFriends($user);
-        $service->render('app/views/index.phtml',array('friends'=>$result));
+        echo json_encode($result);
     }
     public function action(){
         switch ($_POST['action'])
@@ -43,6 +43,14 @@ class home
             case 'acceptReq': $this->acceptReq();
                 break;
             case 'deleteFriend': $this->deleteFriend();
+                break;
+            case 'getFriends': $this->index();
+                break;
+            case 'searchFriends': $this->searchFriends();
+                break;
+            case 'unseenF': $this->requestCount();
+                break;
+            case 'removeUnseen': $this->removeUnseen();
                 break;
         }
     }
@@ -101,5 +109,27 @@ class home
         friends::deleteFriend($data);
         echo $data['friend'].' has been un-friend';
     }
+    public function searchFriends()
+    {
+        $search=array(
+            'search'=>$_POST['search'],
+            'user'=>$_SESSION['userName']
+        );
+        $result = friends::searchFriends($search);
+        echo json_encode($result);
+    }
 
+    public function requestCount()
+    {
+        $user=$_SESSION['userName'];
+        $result=friends::friendRequestCount($user);
+        echo $result;
+    }
+    //remove unseen friend request and make them seen
+    public function removeUnseen()
+    {
+        $user=$_SESSION['userName'];
+        friends::removeUnseen($user);
+
+    }
 }

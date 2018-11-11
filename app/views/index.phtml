@@ -1,4 +1,12 @@
-<?php include 'app/views/includes/header.phtml'?>
+<?php include 'app/views/includes/header.phtml';
+use \App\helpers\session;
+$session=new session();
+        $session->createSession();
+
+        if(!$session->isLogged()){
+            header('location: /login');
+        }
+?>
 <div id="wrapper">
     <h1>Buzz</h1>
     <ul id='adminmenu'>
@@ -15,37 +23,22 @@
             </div>
         </div>
         <div class="col-md-6">
-            <button class="form-control col-md-5" onclick="friendReq()">Friend requests</button>
+            <button class="form-control col-md-5" onclick="friendReq()">Friend requests &nbsp<span id="count"></span></button>
             <div class="alert friendReq col-md-12">
                 <strong>No!</strong> Friend request
             </div>
         </div>
     </div>
     <div class="clear"></div>
+    <div>
+        <input type="text" name="search" id="search_text" placeholder="Search your friends" class="form-control" onkeyup="getF()" />
+    </div>
+    <div class="clear"></div>
     <table id="result">
-        <tr>
-            <th>Username</th>
-            <th>Name</th>
-            <th>Action</th>
-        </tr>
-        <?php
-        foreach ($this->friends as $friend) {
-            echo '<tr>';
-            echo '<td>' . $friend['username'] . '</td>';
-            echo '<td>' . $friend['firstName']. '&nbsp'. $friend['lastName']. '</td>';
-
-
-            ?>
-            <td>
-                <a href="<?php echo '/profile/'.$friend['username']; ?>">view</a> |
-                <a href="javascript:deluser('<?php echo $friend['username']; ?>')">Delete</a>
-            </td>
-            <?php
-            echo '</tr>';
-        }
-
-        ?>
     </table>
+</div>
+<div>
+    <h4>online users</h4>
 </div>
 <?php echo $_SESSION['userName'];?>
 <script>
@@ -75,6 +68,9 @@
                     });
                 }
                 $('.friendReq').html(html1);
+                removeUnseen();
+                unseenF();
+                getF();
 
             }
         });
@@ -168,10 +164,113 @@
                     success: function (data) {
                         //console.log(data)
                         alert(data);
-                        $("#result").load(location.href + " #result");
+                        //$("#result").load(location.href + " #result");
+                        getF();
                     }
                 });
 
         }
     }
+    function getF() {
+        var txt = $('#search_text').val();
+        console.log(txt);
+        if(!txt)
+        {
+        $.ajax({
+            url: '/index',
+            method: 'POST',
+            dataType: 'json',
+            data: {
+                action: 'getFriends'
+            },
+            success: function (data) {
+                console.log(data);
+                html2='<tr><th>Username</th><th>Name</th><th>Action</th></tr>';
+                    $.each(data, function(index, data) {
+                        html2+='<tr>';
+                        html2+='<td><a href="/profile/'+data.acceptFriend+'">'+data.username+ '</a></td>';
+                        html2+='<td>'+data.firstName+ '&nbsp'+ data.lastName+ '</td>';
+                        html2+='<td>';
+                        html2+='<a href="/profile/'+data.acceptFriend+'">chat</a> |';
+                        html2+='<a href="javascript:deluser(\''+data.username+'\')">Delete</a>';
+                        html2+='</td>';
+                        html2+='</tr>';
+                    });
+                $('#result').html(html2);
+
+
+            }
+        });
+        }
+        else
+        {
+            $.ajax({
+                url: '/index',
+                method: 'POST',
+                dataType: 'json',
+                data: {
+                    action: 'searchFriends',
+                    search: txt
+                },
+                success: function (data) {
+                    console.log(data);
+                    html2='<tr><th>Username</th><th>Name</th><th>Action</th></tr>';
+                    $.each(data, function(index, data) {
+                        html2+='<tr>';
+                        html2+='<td><a href="/profile/'+data.acceptFriend+'">'+data.username+ '</a></td>';
+                        html2+='<td>'+data.firstName+ '&nbsp'+ data.lastName+ '</td>';
+                        html2+='<td>';
+                        html2+='<a href="/profile/'+data.acceptFriend+'">chat</a> |';
+                        html2+='<a href="javascript:deluser(\''+data.username+'\')">Delete</a>';
+                        html2+='</td>';
+                        html2+='</tr>';
+                    });
+                    $('#result').html(html2);
+
+
+                }
+            });
+
+        }
+    }
+    //get the unseen friend request
+    function unseenF()
+    {
+        $.ajax({
+            url:'/index',
+            method: 'POST',
+            data: {
+                action:'unseenF'
+               },
+            success: function (data) {
+                console.log(data);
+                if (data === '0'){$('#count').text('').attr("class","")}
+                else{$('#count').text(data).attr("class","count")}
+                //alert(data);
+
+            }
+        });
+        setTimeout(unseenF, 5*1000);
+    }
+
+    function removeUnseen()
+    {
+        $.ajax({
+            url:'/index',
+            method: 'POST',
+            data: {
+                action:'removeUnseen'
+            },
+            success: function (data) {
+                //console.log(data);
+                //$('#count').text(data);
+                //alert(data);
+
+            }
+        });
+    }
+    $(document).ready(function() {
+        getF();
+        unseenF();
+        });
 </script>

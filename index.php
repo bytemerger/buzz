@@ -50,9 +50,7 @@ $klein->respond('GET', '/logout',function ($request, $response){
 });
 
 $klein->respond('GET', '/index', function ($request, $response,$service){
-    $home= new home();
-    $home->index($service);
-    //$service->render('app/views/index.phtml');
+    $service->render('app/views/index.phtml');
 });
 $klein->respond('POST', '/index', function ($request, $response,$service){
     $home=new home();
