@@ -17,14 +17,13 @@ class user
     {
         $conn=new Db();
             try {
-                $sql = "INSERT INTO users ( username, password, firstName, lastName, email, image ) VALUES ( :user, :pass, :firstName, :lastName, :email, :image )";
+                $sql = "INSERT INTO users ( username, password, firstName, lastName, email ) VALUES ( :user, :pass, :firstName, :lastName, :email)";
                 $st = $conn->db->prepare($sql);
                 $st->bindValue(":user", $data['username']);
                 $st->bindValue(":pass", $data['hashPass']);
                 $st->bindValue(":firstName", $data['firstname']);
                 $st->bindValue(":lastName", $data['lastname']);
                 $st->bindValue(":email", $data['email']);
-                $st->bindValue(":image", $data['image']);
                 $st->execute();
                 $conn=null;
                 $status='';

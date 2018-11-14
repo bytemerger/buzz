@@ -172,4 +172,65 @@ class friends
         $conn=null;
 
     }
+
+    public static function sendChatMessage($data)
+    {
+        $conn=new Db();
+        $sql="INSERT INTO messages(sender,acceptor,text,time,seen) VALUES (:user, :friend, :text,NOW(),0)";
+        $st= $conn->db->prepare($sql);
+        $st->bindValue(":user", $data['user']);
+        $st->bindValue(":friend", $data['friend']);
+        $st->bindValue(":text", $data['message']);
+        $st->execute();
+        $conn=null;
+    }
+
+    public static function getChatHistory($data)
+    {
+        $conn=new Db();
+        $sql= "SELECT * FROM messages WHERE (sender=:user AND acceptor=:friend) OR (sender=:friend AND acceptor=:user) ORDER BY time ASC";
+        $st= $conn->db->prepare($sql);
+        $st->bindValue(":user",$data['user']);
+        $st->bindValue(":friend", $data['friend']);
+        $st->execute();
+        $conn=null;
+        $result= $st->fetchAll(\PDO::FETCH_ASSOC);
+        return $result;
+    }
+
+    public static function clearChat($data)
+    {
+        $conn=new Db();
+        $sql= "DELETE FROM messages WHERE (sender=:user AND acceptor=:friend) OR (sender=:friend AND acceptor=:user)";
+        $st= $conn->db->prepare($sql);
+        $st->bindValue(":user",$data['user']);
+        $st->bindValue(":friend", $data['friend']);
+        $st->execute();
+        $conn=null;
+    }
+
+    public static function chatCount($data)
+    {
+        $conn=new Db();
+        $sql="SELECT * FROM messages WHERE sender=:friend AND acceptor=:user AND seen=0";
+        $st= $conn->db->prepare($sql);
+        $st->bindValue(":user", $data['user']);
+        $st->bindValue(":friend", $data['friend']);
+        $st->execute();
+        $conn=null;
+        $result= $st->rowCount();
+        return $result;
+    }
+
+    public static function clearCountChat($data)
+    {
+        $conn=new Db();
+        $sql="UPDATE messages SET seen=1 WHERE sender=:friend AND acceptor=:user AND seen=0";
+        $st= $conn->db->prepare($sql);
+        $st->bindValue(":user", $data['user']);
+        $st->bindValue(":friend", $data['friend']);
+        $st->execute();
+        $conn=null;
+
+    }
 }

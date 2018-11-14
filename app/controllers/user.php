@@ -96,8 +96,7 @@ class user
                     'firstname' => $firstName,
                     'lastname' => $lastName,
                     'email' => $email,
-                    'hashPass' => $hashedPassword,
-                    'image'=>'none'
+                    'hashPass' => $hashedPassword
 
                 );
                 $status=users::signUp($data);

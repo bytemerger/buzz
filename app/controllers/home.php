@@ -52,6 +52,16 @@ class home
                 break;
             case 'removeUnseen': $this->removeUnseen();
                 break;
+            case 'sendChatMessage': $this->sendChatMessage();
+                break;
+            case 'getChatHistory': $this->getChatHistory();
+                break;
+            case 'clearChat': $this->clearChat();
+                break;
+            case 'countChatSeen': $this->getCountChat();
+                break;
+            case 'clearCountChat': $this->clearCountChat();
+                break;
         }
     }
     //list notification
@@ -130,6 +140,57 @@ class home
     {
         $user=$_SESSION['userName'];
         friends::removeUnseen($user);
+
+    }
+    public function sendChatMessage()
+    {
+        $data= array(
+            'user'=>$_SESSION['userName'],
+            'friend'=>$_POST['acceptor'],
+            'message'=>$_POST['message']
+        );
+        friends::sendChatMessage($data);
+
+    }
+
+    public function getChatHistory()
+    {
+        $data= array(
+            'user'=>$_SESSION['userName'],
+            'friend'=>$_POST['friend'],
+        );
+        $result=friends::getChatHistory($data);
+        echo json_encode($result);
+
+    }
+    public function clearChat()
+    {
+        $data= array(
+            'user'=>$_SESSION['userName'],
+            'friend'=>$_POST['friend'],
+        );
+        friends::clearChat($data);
+    }
+    public function getCountChat()
+    {
+        $data= array(
+            'user'=>$_SESSION['userName'],
+            'friend'=>$_POST['friend'],
+        );
+        $result=friends::chatCount($data);
+        if($result > 0){
+            $output='<span class="badge badge-info">'.$result.'</span>';
+            echo $output;
+        }
+    }
+
+    public function clearCountChat()
+    {
+        $data= array(
+            'user'=>$_SESSION['userName'],
+            'friend'=>$_POST['friend'],
+        );
+        friends::clearCountChat($data);
 
     }
 }
